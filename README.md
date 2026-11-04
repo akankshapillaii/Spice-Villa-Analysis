@@ -8,7 +8,7 @@
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 Spice Villa is a restaurant whose sales were recorded as raw order-level data covering **two years (Jan 2022 – Dec 2023)**. This project turns that raw data into decisions: which menu categories and items drive revenue, how sales are trending month over month and year over year, which customers matter most, how customers pay, and which days of the week are busiest.
 
@@ -22,7 +22,7 @@ The workflow mirrors a real analyst pipeline:
 
 ---
 
-## 🎯 Business Questions
+## Business Questions
 
 1. What are the restaurant's headline KPIs (revenue, orders, items sold, customers, average order value)?
 2. Which menu **categories** and **items** generate the most revenue?
@@ -33,9 +33,9 @@ The workflow mirrors a real analyst pipeline:
 
 ---
 
-## 📂 Dataset
+## Dataset
 
-**File:** `spice_data.csv` | **Rows:** 15,776 | **Columns:** 13 | **Period:** 01-Jan-2022 to 31-Dec-2023
+**File:** `Src/spice_data.csv` | **Rows:** 15,776 | **Columns:** 13 | **Period:** 01-Jan-2022 to 31-Dec-2023
 
 | Column | Description |
 |--------|-------------|
@@ -52,16 +52,14 @@ The workflow mirrors a real analyst pipeline:
 
 ---
 
-## 🧹 Step 1: Data Cleaning in Excel
+## Step 1: Data Cleaning in Excel
 
 - Reviewed the raw file for duplicates, data types and blank values (**0 duplicate orders** found)
 - Standardised column headers and formats
 - Converted `Order Date` to a consistent `dd-mm-yyyy` date format
 - Created the date-derived columns: **Year, Month, Day Name, Quarter**
 - Checked `Payment Method`: **524 blank values (3.3%)** were kept and flagged rather than guessed, then handled explicitly in SQL (see query 7)
-- Exported the cleaned sheet as `spice_data.csv` for loading into PostgreSQL
-
-> **Data note:** In 874 rows, `Price × Quantity` differs from `Order Total` by 1–2 units (for example Coca Cola: price 3, quantity 4, total 10). This looks like the displayed unit price is rounded (about 2.5), so `Order Total` is treated as the source of truth for all revenue figures.
+- Exported the cleaned sheet as `Src/spice_data.csv` for loading into PostgreSQL
 
 ---
 
@@ -120,15 +118,13 @@ The dashboard ([`spice_villa_dashboard.pbix`](spice_villa_dashboad.pbix)) has **
 
 ### Dashboard Preview
 
-> Add your screenshots to the `images/` folder and update the paths below.
-
 | Exec Dashboard | Menu Insights | Operations & Channel Dynamics |
 |:---:|:---:|:---:|
-| ![Exec](images/exec_dashboard.png) | ![Menu](images/menu_insights.png) | ![Ops](images/operations.png) |
+| ![Exec](Dashboard/Exec_Dashboard.png) | ![Menu](Dashboard/Menu_Insights.png) | ![Ops](Dashboard/Operations_Insights.png) |
 
 ---
 
-## 🔑 Key Findings
+## Key Findings
 
 | Metric | Value |
 |--------|-------|
@@ -140,13 +136,13 @@ The dashboard ([`spice_villa_dashboard.pbix`](spice_villa_dashboad.pbix)) has **
 
 **Insights**
 
-- 🍽️ **Main Dishes are the revenue engine**, contributing about **47%** of total revenue (148,144), far ahead of Starters (17.8%), Desserts (16.7%), Side Dishes (11.8%) and Drinks (6.7%).
-- 🏆 **Top 5 items by revenue:** Grilled Chicken (37,380), Pasta Alfredo (37,128), Steak (35,320), Salmon (22,608) and Vegetarian Platter (15,708). Three mains alone are close to a third of all revenue.
-- 📉 **Revenue declined year over year:** 161,142 in 2022 vs 153,865 in 2023, a drop of about **4.5%**.
-- 📅 **Seasonality is mild.** Q2 is the strongest quarter (81,603), Q4 the weakest (76,579). Highest month: March 2022 (14,853); lowest: February 2023 (11,475).
-- 💳 **Payment mix is almost perfectly even** (Credit Card ≈ Cash ≈ Digital Wallet ≈ 32% each), and **3.3% of orders (524) have no payment method recorded**, a data-capture gap worth fixing at the POS.
-- 📆 **Sunday is the top revenue day** (45,967) and Wednesday the lowest (43,706). The gap between best and worst day is only about 5%, so demand is steady across the week.
-- 👥 **Customer spend is evenly spread:** the top customers (CUST_020 and CUST_093) each spent 3,811, only modestly above the average of about 3,150 per customer, so revenue is not dependent on a few big spenders.
+- **Main Dishes are the revenue engine**, contributing about **47%** of total revenue (148,144), far ahead of Starters (17.8%), Desserts (16.7%), Side Dishes (11.8%) and Drinks (6.7%).
+- **Top 5 items by revenue:** Grilled Chicken (37,380), Pasta Alfredo (37,128), Steak (35,320), Salmon (22,608) and Vegetarian Platter (15,708). Three mains alone are close to a third of all revenue.
+- **Revenue declined year over year:** 161,142 in 2022 vs 153,865 in 2023, a drop of about **4.5%**.
+- **Seasonality is mild.** Q2 is the strongest quarter (81,603), Q4 the weakest (76,579). Highest month: March 2022 (14,853); lowest: February 2023 (11,475).
+- **Payment mix is almost perfectly even** (Credit Card ≈ Cash ≈ Digital Wallet ≈ 32% each), and **3.3% of orders (524) have no payment method recorded**, a data-capture gap worth fixing at the POS.
+- **Sunday is the top revenue day** (45,967) and Wednesday the lowest (43,706). The gap between best and worst day is only about 5%, so demand is steady across the week.
+- **Customer spend is evenly spread:** the top customers (CUST_020 and CUST_093) each spent 3,811, only modestly above the average of about 3,150 per customer, so revenue is not dependent on a few big spenders.
 
 **Recommendations**
 
@@ -158,56 +154,9 @@ The dashboard ([`spice_villa_dashboard.pbix`](spice_villa_dashboad.pbix)) has **
 
 ---
 
-## 🛠️ How to Run
-
-1. **Clone the repo**
-   ```bash
-   git clone https://github.com/<your-username>/spice-villa-restaurant-analytics.git
-   ```
-2. **PostgreSQL:** create a database, open `sql/spice_villa.sql` in pgAdmin or psql, and update the `COPY` path to where `spice_data.csv` is saved on your machine:
-   ```sql
-   copy spice_orders(order_id, customer_id, category, item, price, quantity,
-                     order_total, order_date, payment_method, year, month, day_name, quarter)
-   from '<your-path>/spice_data.csv' delimiter ',' csv header;
-   ```
-   Then run the queries section by section. The script sets `datestyle = 'ISO, DMY'` so the `dd-mm-yyyy` dates load correctly.
-3. **Power BI:** open `powerbi/spice_villa_dashboard.pbix` in Power BI Desktop. If prompted, refresh or re-point the data source to `data/spice_data.csv`.
-
----
-
-## 📁 Repository Structure
-
-```
-spice-villa-restaurant-analytics/
-│
-├── data/
-│   └── spice_data.csv
-├── sql/
-│   └── spice_villa.sql
-├── powerbi/
-│   └── spice_villa_dashboard.pbix
-├── images/
-│   ├── exec_dashboard.png
-│   ├── menu_insights.png
-│   └── operations.png
-└── README.md
-```
-
----
-
-## 🧰 Skills Demonstrated
+## Skills Demonstrated
 
 - **Excel:** data cleaning, validation, date-field engineering
 - **SQL (PostgreSQL):** schema design with constraints, aggregations, window functions (`LAG`), `COALESCE`/`NULLIF`, subqueries
 - **Power BI:** data modelling, DAX measures, interactive multi-page dashboard design, slicers, KPI cards
 - **Analytics:** KPI definition, trend (MoM/YoY) analysis, customer and menu analysis, turning findings into recommendations
-
----
-
-## 👤 Author
-
-**<Your Name>**
-BBA graduate (GGSIPU, 2022–25) transitioning into data analytics
-🔗 [LinkedIn](https://linkedin.com/in/<your-profile>) | 💻 [GitHub](https://github.com/<your-username>)
-
-⭐ If you found this project useful, consider giving it a star!
