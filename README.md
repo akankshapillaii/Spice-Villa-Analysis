@@ -67,7 +67,7 @@ The workflow mirrors a real analyst pipeline:
 
 ## 🗄️ Step 2: Analysis in PostgreSQL
 
-The full script is in [`spice_villa.sql`](sql/spice_villa.sql).
+The full script is in [`spice_villa.sql`](spice_villa.sql).
 
 ### Schema
 
