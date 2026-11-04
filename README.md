@@ -102,29 +102,11 @@ create table spice_orders (
 | 7 | Payment method preference and missing-value impact | `COALESCE`, subquery for % share |
 | 8 | Day-of-week peak analysis | `GROUP BY`, `AVG` |
 
-**Example: Month-over-Month growth**
-
-```sql
-select
-    year,
-    month,
-    to_char(to_date(month::text, 'MM'), 'Month') as month_name,
-    sum(order_total) as monthly_revenue,
-    lag(sum(order_total)) over (order by year, month) as prev_month_revenue,
-    round(
-        (sum(order_total) - lag(sum(order_total)) over (order by year, month)) * 100.0 /
-        nullif(lag(sum(order_total)) over (order by year, month), 0), 2
-    ) as mom_growth_percentage
-from spice_orders
-group by year, month
-order by year, month;
-```
-
 ---
 
 ## 📊 Step 3: Visualization in Power BI
 
-The dashboard ([`spice_villa_dashboard.pbix`](powerbi/spice_villa_dashboard.pbix)) has **3 pages**, with **Year** and **Month** slicers for interactive filtering and a custom Spice Villa brown/cream theme.
+The dashboard ([`spice_villa_dashboard.pbix`](spice_villa_dashboad.pbix)) has **3 pages**, with **Year** and **Month** slicers for interactive filtering and a custom Spice Villa brown/cream theme.
 
 | Page | What it shows |
 |------|---------------|
